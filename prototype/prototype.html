@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Emotion Tracker Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <h1>🧠 Emotion Tracker</h1>
+  <p>Prototype – Emotional Awareness System</p>
+</header>
+
+<main>
+
+  <!-- INPUT -->
+  <section class="card">
+    <h2>Log Emotion</h2>
+
+    <label>Select Emotion</label>
+    <select id="emotion">
+      <option value="happy">Happy</option>
+      <option value="calm">Calm</option>
+      <option value="stressed">Stressed</option>
+      <option value="sad">Sad</option>
+      <option value="angry">Angry</option>
+    </select>
+
+    <label>Intensity (1–10)</label>
+    <input type="range" id="intensity" min="1" max="10" value="5">
+    <div class="range-value" id="intensityValue">5</div>
+
+    <label>Notes</label>
+    <textarea id="notes" placeholder="What caused this emotion?"></textarea>
+
+    <button onclick="saveEmotion()">Save Emotion</button>
+  </section>
+
+  <!-- VISUALIZATION -->
+  <section class="card wide">
+    <h2>Emotion Timeline</h2>
+    <p class="subtitle">
+      This timeline shows how your emotions change over time.  
+      Higher points represent stronger emotional intensity.
+    </p>
+
+    <div class="legend">
+      <span class="happy">Happy</span>
+      <span class="calm">Calm</span>
+      <span class="stressed">Stressed</span>
+      <span class="sad">Sad</span>
+      <span class="angry">Angry</span>
+    </div>
+
+    <canvas id="timeline"></canvas>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="card">
+    <h2>Recent Emotions</h2>
+    <div id="history"></div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Prototype Demo | Frontend Only</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

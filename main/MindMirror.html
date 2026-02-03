@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MindMap Mirror | Daily Emotion Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <h1>🧠 MindMap Mirror</h1>
+  <p>Daily Emotion Tracking & Awareness System</p>
+</header>
+
+<main>
+
+  <!-- TODAY PANEL -->
+  <section class="card">
+    <h2>Today's Emotion</h2>
+    <p class="subtitle">
+      Log how you felt today. This entry represents your emotional state for this day.
+    </p>
+
+    <label>Emotion</label>
+    <select id="emotion">
+      <option value="happy">Happy</option>
+      <option value="calm">Calm</option>
+      <option value="stressed">Stressed</option>
+      <option value="sad">Sad</option>
+      <option value="angry">Angry</option>
+    </select>
+
+    <label>Intensity (1–10)</label>
+    <input type="range" id="intensity" min="1" max="10" value="5">
+    <div class="range-value" id="intensityValue">5</div>
+
+    <label>Reflection Notes</label>
+    <textarea id="notes" placeholder="What influenced your emotions today?"></textarea>
+
+    <button onclick="saveEmotion()">Save Today's Emotion</button>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="card wide">
+    <h2>Emotion Timeline</h2>
+    <p class="subtitle">
+      This timeline shows how your daily emotions change over time.  
+      Height = Emotional Intensity | Color = Emotion Type | Left → Right = Time
+    </p>
+
+    <div class="legend">
+      <span class="happy">Happy</span>
+      <span class="calm">Calm</span>
+      <span class="stressed">Stressed</span>
+      <span class="sad">Sad</span>
+      <span class="angry">Angry</span>
+    </div>
+
+    <canvas id="timeline"></canvas>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section class="card">
+    <h2>Emotional Insights</h2>
+    <div class="result-box" id="result">
+      Log at least 3 days to see emotional patterns and trends.
+    </div>
+    <button onclick="generateInsights()">Analyze Trends</button>
+  </section>
+
+</main>
+
+<footer>
+  <p>Main Showcase • Emotion-Based Tracking System</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
