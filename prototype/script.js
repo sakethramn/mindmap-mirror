@@ -1,4 +1,4 @@
-const STORAGE_KEY = "mindmap_emotions";
+const STORAGE_KEY = "mindmap_live_emotions";
 const canvas = document.getElementById("timeline");
 const ctx = canvas.getContext("2d");
 
@@ -7,6 +7,7 @@ const intensityValue = document.getElementById("intensityValue");
 const dayInfo = document.getElementById("dayInfo");
 
 let points = [];
+let glowPulse = 0;
 
 if (intensityInput && intensityValue) {
   intensityInput.addEventListener("input", () => {
@@ -31,69 +32,35 @@ function clearSelection() {
   intensityValue.textContent = 5;
 }
 
-// ---------------- SAVE / UPDATE ----------------
+// ---------------- SAVE LIVE ENTRY ----------------
 function saveEmotion() {
   const emotion = document.getElementById("emotion").value;
-  if (!emotion) {
-    alert("Please select an emotion first.");
-    return;
-  }
+  if (!emotion) return alert("Select an emotion");
 
   const intensity = Number(document.getElementById("intensity").value);
   const notes = document.getElementById("notes").value;
-  const today = new Date().toISOString().split("T")[0];
+
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   let data = loadData();
-  const index = data.findIndex(e => e.date === today);
-
-  const entry = { emotion, intensity, notes, date: today };
-
-  if (index !== -1) {
-    data[index] = entry;
-    alert("Today's emotion updated!");
-  } else {
-    data.push(entry);
-    alert("Emotion saved!");
-  }
+  data.push({ emotion, intensity, notes, time });
 
   saveData(data);
   drawTimeline(data, true);
 }
 
-// ---------------- FILTER ----------------
-function filterTimeline() {
-  const start = document.getElementById("startDate").value;
-  const end = document.getElementById("endDate").value;
-
-  if (!start || !end) {
-    alert("Select both dates");
-    return;
-  }
-
-  const data = loadData().filter(e => e.date >= start && e.date <= end);
-  drawTimeline(data, false);
-}
-
-// ---------------- CLEAR TIMELINE ----------------
-function clearTimeline() {
-  if (confirm("Delete all emotion history?")) {
-    localStorage.removeItem(STORAGE_KEY);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    dayInfo.textContent = "Timeline cleared. Start logging emotions again.";
-  }
-}
-
-// ---------------- DRAW TIMELINE ----------------
+// ---------------- DRAW ENGINE ----------------
 function drawTimeline(data, animate) {
   canvas.width = canvas.offsetWidth;
   canvas.height = 300;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  points = [];
 
-  if (data.length === 0) return;
+  points = [];
+  if (!data.length) return;
 
   const spacing = canvas.width / (data.length + 1);
-  const maxHeight = canvas.height - 40;
+  const maxHeight = canvas.height - 50;
 
   let prev = null;
 
@@ -105,31 +72,82 @@ function drawTimeline(data, animate) {
     points.push({ x, y, entry });
 
     if (prev) {
-      if (animate) {
-        animateLine(prev.x, prev.y, x, y, color);
-      } else {
-        drawLine(prev.x, prev.y, x, y, color);
-      }
+      animate
+        ? animateGlowLine(prev.x, prev.y, x, y, color)
+        : drawGlowLine(prev.x, prev.y, x, y, color);
     }
 
-    drawPoint(x, y, color);
+    drawGlowPoint(x, y, color, i === data.length - 1);
     prev = { x, y };
   });
 
-  drawAxes(data);
+  drawAxis(data);
+  requestAnimationFrame(pulseGlow);
 }
 
-// ---------------- INTERACTION ----------------
+// ---------------- GLOW EFFECTS ----------------
+function drawGlowPoint(x, y, color, pulse) {
+  ctx.beginPath();
+  ctx.shadowBlur = pulse ? 25 : 15;
+  ctx.shadowColor = color;
+  ctx.fillStyle = color;
+  ctx.arc(x, y, 6 + (pulse ? glowPulse : 0), 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function drawGlowLine(x1, y1, x2, y2, color) {
+  ctx.beginPath();
+  ctx.shadowBlur = 20;
+  ctx.shadowColor = color;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function animateGlowLine(x1, y1, x2, y2, color) {
+  let step = 0;
+  const steps = 30;
+
+  function frame() {
+    step++;
+    const x = x1 + (x2 - x1) * (step / steps);
+    const y = y1 + (y2 - y1) * (step / steps);
+
+    drawGlowLine(x1, y1, x, y, color);
+    if (step < steps) requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ---------------- AXIS ----------------
+function drawAxis(data) {
+  ctx.fillStyle = "#aaa";
+  ctx.font = "12px Arial";
+
+  data.forEach((entry, i) => {
+    const x = (canvas.width / (data.length + 1)) * (i + 1);
+    ctx.fillText(entry.time, x - 15, canvas.height - 10);
+  });
+
+  ctx.fillText("Intensity ↑", 5, 15);
+  ctx.fillText("Time →", canvas.width - 60, canvas.height - 10);
+}
+
+// ---------------- CLICK INFO ----------------
 canvas.addEventListener("click", e => {
   const rect = canvas.getBoundingClientRect();
   const mx = e.clientX - rect.left;
   const my = e.clientY - rect.top;
 
   points.forEach(p => {
-    if (Math.hypot(p.x - mx, p.y - my) < 8) {
+    if (Math.hypot(p.x - mx, p.y - my) < 10) {
       const d = p.entry;
       dayInfo.innerHTML = `
-        <strong>Date:</strong> ${d.date}<br>
+        <strong>Time:</strong> ${d.time}<br>
         <strong>Emotion:</strong> ${d.emotion}<br>
         <strong>Intensity:</strong> ${d.intensity}/10<br>
         <strong>Notes:</strong> ${d.notes || "None"}
@@ -138,54 +156,10 @@ canvas.addEventListener("click", e => {
   });
 });
 
-// ---------------- DRAW HELPERS ----------------
-function drawPoint(x, y, color) {
-  ctx.beginPath();
-  ctx.arc(x, y, 6, 0, Math.PI * 2);
-  ctx.fillStyle = color;
-  ctx.fill();
-}
-
-function drawLine(x1, y1, x2, y2, color) {
-  ctx.strokeStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-}
-
-function animateLine(x1, y1, x2, y2, color) {
-  let step = 0;
-  const steps = 20;
-
-  function frame() {
-    step++;
-    const x = x1 + (x2 - x1) * (step / steps);
-    const y = y1 + (y2 - y1) * (step / steps);
-
-    ctx.strokeStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-
-    if (step < steps) requestAnimationFrame(frame);
-  }
-
-  frame();
-}
-
-function drawAxes(data) {
-  ctx.fillStyle = "#aaa";
-  ctx.font = "12px Arial";
-
-  data.forEach((entry, i) => {
-    const x = (canvas.width / (data.length + 1)) * (i + 1);
-    ctx.fillText(entry.date.slice(5), x - 15, canvas.height - 5);
-  });
-
-  ctx.fillText("Intensity ↑", 5, 15);
-  ctx.fillText("Days →", canvas.width - 60, canvas.height - 10);
+// ---------------- PULSE ----------------
+function pulseGlow() {
+  glowPulse = (glowPulse + 0.05) % 2;
+  drawTimeline(loadData(), false);
 }
 
 // ---------------- COLORS ----------------
