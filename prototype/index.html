@@ -9,7 +9,11 @@
 
 <header>
   <h1>🧪 Emotion Tracker Prototype</h1>
-  <p>Concept Demonstration – Timeline & Emotional Awareness</p>
+  <p>
+    Timeline Explanation:  
+    X-Axis → Days | Y-Axis → Emotional Intensity | Line Color → Emotion Type  
+    Click a point to see what you felt on that day.
+  </p>
 </header>
 
 <main>
@@ -19,6 +23,7 @@
 
     <label>Emotion</label>
     <select id="emotion">
+      <option value="">-- Select Emotion --</option>
       <option value="happy">Happy</option>
       <option value="calm">Calm</option>
       <option value="stressed">Stressed</option>
@@ -31,9 +36,10 @@
     <div class="range-value" id="intensityValue">5</div>
 
     <label>Notes</label>
-    <textarea id="notes"></textarea>
+    <textarea id="notes" placeholder="What made you feel this way today?"></textarea>
 
     <button onclick="saveEmotion()">Save Emotion</button>
+    <button class="secondary" onclick="clearSelection()">Clear Selection</button>
   </section>
 
   <section class="card wide">
@@ -51,12 +57,16 @@
       <button onclick="filterTimeline()">View Period</button>
       <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
     </div>
+
+    <div class="day-info" id="dayInfo">
+      Click a point on the timeline to see details for that day.
+    </div>
   </section>
 
 </main>
 
 <footer>
-  <p>Prototype Version • Concept Demonstration</p>
+  <p>Prototype • Interactive Emotional Timeline System</p>
 </footer>
 
 <script src="script.js"></script>
