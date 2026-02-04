@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Live Emotion Prototype | Time-Based Timeline</title>
+  <title>Live Emotion Prototype</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -10,65 +10,55 @@
 <header>
   <h1>🧪 Live Emotion Prototype</h1>
   <p>
-    Timeline Guide:  
     X-Axis → Time (Minutes) | Y-Axis → Intensity | Glow → Latest Emotion  
-    Click a dot to instantly view emotion details.
+    Click a dot to see emotion details instantly.
   </p>
 </header>
 
 <main>
 
-  <!-- INPUT PANEL -->
-  <section class="card">
-    <h2>Log Live Emotion</h2>
+<section class="card">
+  <h2>Log Live Emotion</h2>
 
-    <label>Emotion</label>
-    <select id="emotion">
-      <option value="">-- Select Emotion --</option>
-      <option value="happy">Happy</option>
-      <option value="calm">Calm</option>
-      <option value="stressed">Stressed</option>
-      <option value="sad">Sad</option>
-      <option value="angry">Angry</option>
-    </select>
+  <label>Emotion</label>
+  <select id="emotion">
+    <option value="">-- Select Emotion --</option>
+    <option value="happy">Happy</option>
+    <option value="calm">Calm</option>
+    <option value="stressed">Stressed</option>
+    <option value="sad">Sad</option>
+    <option value="angry">Angry</option>
+  </select>
 
-    <label>Intensity (1–10)</label>
-    <input type="range" id="intensity" min="1" max="10" value="5">
-    <div class="range-value" id="intensityValue">5</div>
+  <label>Intensity (1–10)</label>
+  <input type="range" id="intensity" min="1" max="10" value="5">
+  <div class="range-value" id="intensityValue">5</div>
 
-    <label>Notes</label>
-    <textarea id="notes" placeholder="What changed your mood?"></textarea>
+  <label>Notes</label>
+  <textarea id="notes" placeholder="What changed your mood?"></textarea>
 
-    <button onclick="saveEmotion()">Save Emotion</button>
-    <button class="secondary" onclick="clearSelection()">Clear Selection</button>
-  </section>
+  <button onclick="saveEmotion()">Save Emotion</button>
+  <button class="secondary" onclick="clearSelection()">Clear Selection</button>
+</section>
 
-  <!-- TIMELINE PANEL -->
-  <section class="card wide">
-    <h2>Live Emotion Timeline</h2>
+<section class="card wide">
+  <h2>Live Emotion Timeline</h2>
 
-    <canvas id="timeline"></canvas>
+  <canvas id="timeline"></canvas>
 
-    <div class="timeline-controls">
-      <label>From Time</label>
-      <input type="time" id="startTime">
+  <div class="timeline-controls">
+    <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
+  </div>
 
-      <label>To Time</label>
-      <input type="time" id="endTime">
-
-      <button onclick="filterTimeline()">View Period</button>
-      <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
-    </div>
-
-    <div class="day-info" id="dayInfo">
-      Click a dot to see emotion details.
-    </div>
-  </section>
+  <div class="day-info" id="dayInfo">
+    Click a dot to see emotion details.
+  </div>
+</section>
 
 </main>
 
 <footer>
-  <p>Prototype • Real-Time Emotional Flow Visualization</p>
+  <p>Prototype • Real-Time Emotional Flow</p>
 </footer>
 
 <script src="script.js"></script>
