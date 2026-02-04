@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Emotion Tracker Prototype | Live Timeline</title>
+  <title>Live Emotion Prototype | Time-Based Timeline</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -10,9 +10,9 @@
 <header>
   <h1>🧪 Live Emotion Prototype</h1>
   <p>
-    Real-Time Timeline  
-    X-Axis → Minutes | Y-Axis → Intensity | Glow → Latest Emotion  
-    Click a glowing dot to view details.
+    Timeline Guide:  
+    X-Axis → Time (Minutes) | Y-Axis → Intensity | Glow → Latest Emotion  
+    Click a dot to instantly view emotion details.
   </p>
 </header>
 
@@ -49,12 +49,19 @@
 
     <canvas id="timeline"></canvas>
 
-    <div class="day-info" id="dayInfo">
-      Click the glowing dot to see emotion details.
+    <div class="timeline-controls">
+      <label>From Time</label>
+      <input type="time" id="startTime">
+
+      <label>To Time</label>
+      <input type="time" id="endTime">
+
+      <button onclick="filterTimeline()">View Period</button>
+      <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
     </div>
 
-    <div class="timeline-controls">
-      <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
+    <div class="day-info" id="dayInfo">
+      Click a dot to see emotion details.
     </div>
   </section>
 
