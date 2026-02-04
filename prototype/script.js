@@ -45,14 +45,14 @@ function saveEmotion() {
   const notes = document.getElementById("notes").value;
 
   const now = new Date();
-  const timeStr = now.toTimeString().slice(0, 5); // HH:MM
+  const timeStr = now.toTimeString().slice(0, 5);
   const minutes = timeToMinutes(timeStr);
 
   fullData = loadData();
   fullData.push({ emotion, intensity, notes, time: timeStr, minutes });
   saveData(fullData);
 
-  drawTimeline(fullData, true);
+  drawTimeline(fullData);
 }
 
 // ---------------- FILTER ----------------
@@ -72,15 +72,37 @@ function filterTimeline() {
     e.minutes >= startMin && e.minutes <= endMin
   );
 
-  drawTimeline(filtered, false);
+  drawTimeline(filtered);
+}
+
+// ---------------- CLEAR SELECTED PERIOD ----------------
+function clearSelectedPeriod() {
+  const start = document.getElementById("startTime").value;
+  const end = document.getElementById("endTime").value;
+
+  if (!start || !end) {
+    alert("Select a time range to clear.");
+    return;
+  }
+
+  const startMin = timeToMinutes(start);
+  const endMin = timeToMinutes(end);
+
+  fullData = fullData.filter(e =>
+    !(e.minutes >= startMin && e.minutes <= endMin)
+  );
+
+  saveData(fullData);
+  drawTimeline(fullData);
+  dayInfo.textContent = "Selected time period cleared.";
 }
 
 // ---------------- SHOW FULL ----------------
 function showFullTimeline() {
-  drawTimeline(fullData, false);
+  drawTimeline(fullData);
 }
 
-// ---------------- CLEAR ----------------
+// ---------------- CLEAR ALL ----------------
 function clearTimeline() {
   if (!confirm("Delete all emotion history?")) return;
 
@@ -93,7 +115,7 @@ function clearTimeline() {
 }
 
 // ---------------- DRAW ----------------
-function drawTimeline(data, animate) {
+function drawTimeline(data) {
   canvas.width = canvas.offsetWidth;
   canvas.height = 320;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -112,13 +134,13 @@ function drawTimeline(data, animate) {
 
     points.push({ x, y, entry });
 
+    // Clean line (no glow)
     if (prev) {
-      animate
-        ? animateGlowLine(prev.x, prev.y, x, y, color)
-        : drawGlowLine(prev.x, prev.y, x, y, color);
+      drawLine(prev.x, prev.y, x, y, "#aaa");
     }
 
-    drawGlowPoint(x, y, color);
+    // Soft glow dot only
+    drawSoftGlowPoint(x, y, color);
     prev = { x, y };
   });
 
@@ -146,44 +168,23 @@ canvas.addEventListener("click", e => {
 });
 
 // ---------------- VISUALS ----------------
-function drawGlowPoint(x, y, color) {
+function drawSoftGlowPoint(x, y, color) {
   ctx.beginPath();
-  ctx.shadowBlur = 15;
+  ctx.shadowBlur = 8;   // SMALL glow
   ctx.shadowColor = color;
   ctx.fillStyle = color;
-  ctx.arc(x, y, 6, 0, Math.PI * 2);
+  ctx.arc(x, y, 5, 0, Math.PI * 2);
   ctx.fill();
   ctx.shadowBlur = 0;
 }
 
-function drawGlowLine(x1, y1, x2, y2, color) {
+function drawLine(x1, y1, x2, y2, color) {
   ctx.beginPath();
-  ctx.shadowBlur = 20;
-  ctx.shadowColor = color;
   ctx.strokeStyle = color;
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2;
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.stroke();
-  ctx.shadowBlur = 0;
-}
-
-function animateGlowLine(x1, y1, x2, y2, color) {
-  let step = 0;
-  const steps = 25;
-
-  function frame() {
-    step++;
-    const x = x1 + (x2 - x1) * (step / steps);
-    const y = y1 + (y2 - y1) * (step / steps);
-
-    drawGlowLine(x1, y1, x, y, color);
-
-    if (step < steps) {
-      requestAnimationFrame(frame);
-    }
-  }
-  frame();
 }
 
 // ---------------- AXIS ----------------
@@ -214,5 +215,5 @@ function getColor(emotion) {
 // ---------------- LOAD ----------------
 window.onload = () => {
   fullData = loadData();
-  drawTimeline(fullData, false);
+  drawTimeline(fullData);
 };
