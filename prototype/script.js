@@ -9,13 +9,10 @@ const dayInfo = document.getElementById("dayInfo");
 let points = [];
 let animationFrame = null;
 
-if (intensityInput && intensityValue) {
-  intensityInput.addEventListener("input", () => {
-    intensityValue.textContent = intensityInput.value;
-  });
-}
+intensityInput.addEventListener("input", () => {
+  intensityValue.textContent = intensityInput.value;
+});
 
-// ---------------- STORAGE ----------------
 function loadData() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
@@ -24,7 +21,6 @@ function saveData(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-// ---------------- UI ----------------
 function clearSelection() {
   document.getElementById("emotion").value = "";
   document.getElementById("intensity").value = 5;
@@ -32,7 +28,6 @@ function clearSelection() {
   intensityValue.textContent = 5;
 }
 
-// ---------------- SAVE ----------------
 function saveEmotion() {
   const emotion = document.getElementById("emotion").value;
   if (!emotion) return alert("Select an emotion");
@@ -43,31 +38,13 @@ function saveEmotion() {
   const now = new Date();
   const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-  let data = loadData();
+  const data = loadData();
   data.push({ emotion, intensity, notes, time });
-
   saveData(data);
+
   drawTimeline(data, true);
 }
 
-// ---------------- FILTER BY TIME ----------------
-function filterTimeline() {
-  const start = document.getElementById("startTime").value;
-  const end = document.getElementById("endTime").value;
-
-  if (!start || !end) {
-    alert("Select both start and end time.");
-    return;
-  }
-
-  const data = loadData().filter(e => {
-    return e.time >= start && e.time <= end;
-  });
-
-  drawTimeline(data, false);
-}
-
-// ---------------- CLEAR ----------------
 function clearTimeline() {
   if (!confirm("Delete all emotion history?")) return;
 
@@ -82,10 +59,9 @@ function clearTimeline() {
   }
 }
 
-// ---------------- DRAW ENGINE ----------------
 function drawTimeline(data, animate) {
   canvas.width = canvas.offsetWidth;
-  canvas.height = 300;
+  canvas.height = 320;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   points = [];
 
@@ -93,6 +69,7 @@ function drawTimeline(data, animate) {
 
   const spacing = canvas.width / (data.length + 1);
   const maxHeight = canvas.height - 50;
+
   let prev = null;
 
   data.forEach((entry, i) => {
@@ -115,7 +92,25 @@ function drawTimeline(data, animate) {
   drawAxis(data);
 }
 
-// ---------------- VISUALS ----------------
+canvas.addEventListener("click", e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  for (const p of points) {
+    if (Math.hypot(p.x - mx, p.y - my) < 10) {
+      const d = p.entry;
+      dayInfo.innerHTML = `
+        <strong>Time:</strong> ${d.time}<br>
+        <strong>Emotion:</strong> ${d.emotion}<br>
+        <strong>Intensity:</strong> ${d.intensity}/10<br>
+        <strong>Notes:</strong> ${d.notes || "None"}
+      `;
+      break;
+    }
+  }
+});
+
 function drawGlowPoint(x, y, color) {
   ctx.beginPath();
   ctx.shadowBlur = 15;
@@ -153,11 +148,9 @@ function animateGlowLine(x1, y1, x2, y2, color) {
       animationFrame = requestAnimationFrame(frame);
     }
   }
-
   frame();
 }
 
-// ---------------- AXIS ----------------
 function drawAxis(data) {
   ctx.fillStyle = "#aaa";
   ctx.font = "12px Arial";
@@ -171,27 +164,16 @@ function drawAxis(data) {
   ctx.fillText("Time →", canvas.width - 60, canvas.height - 8);
 }
 
-// ---------------- CLICK ----------------
-canvas.addEventListener("click", e => {
-  const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
+function getColor(emotion) {
+  return {
+    happy: "#4caf50",
+    calm: "#03a9f4",
+    stressed: "#ff9800",
+    sad: "#9c27b0",
+    angry: "#f44336"
+  }[emotion] || "#fff";
+}
 
-  for (const p of points) {
-    if (Math.hypot(p.x - mx, p.y - my) < 10) {
-      const d = p.entry;
-      dayInfo.innerHTML = `
-        <strong>Time:</strong> ${d.time}<br>
-        <strong>Emotion:</strong> ${d.emotion}<br>
-        <strong>Intensity:</strong> ${d.intensity}/10<br>
-        <strong>Notes:</strong> ${d.notes || "None"}
-      `;
-      break;
-    }
-  }
-});
-
-// ---------------- LOAD ----------------
 window.onload = () => {
   drawTimeline(loadData(), false);
 };
