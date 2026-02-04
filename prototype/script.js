@@ -7,12 +7,19 @@ const intensityValue = document.getElementById("intensityValue");
 const dayInfo = document.getElementById("dayInfo");
 
 let points = [];
-let animationFrame = null;
+let fullData = [];
 
 intensityInput.addEventListener("input", () => {
   intensityValue.textContent = intensityInput.value;
 });
 
+// ---------------- HELPERS ----------------
+function timeToMinutes(timeStr) {
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+}
+
+// ---------------- STORAGE ----------------
 function loadData() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
@@ -21,6 +28,7 @@ function saveData(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+// ---------------- UI ----------------
 function clearSelection() {
   document.getElementById("emotion").value = "";
   document.getElementById("intensity").value = 5;
@@ -28,6 +36,7 @@ function clearSelection() {
   intensityValue.textContent = 5;
 }
 
+// ---------------- SAVE ----------------
 function saveEmotion() {
   const emotion = document.getElementById("emotion").value;
   if (!emotion) return alert("Select an emotion");
@@ -36,29 +45,54 @@ function saveEmotion() {
   const notes = document.getElementById("notes").value;
 
   const now = new Date();
-  const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const timeStr = now.toTimeString().slice(0, 5); // HH:MM
+  const minutes = timeToMinutes(timeStr);
 
-  const data = loadData();
-  data.push({ emotion, intensity, notes, time });
-  saveData(data);
+  fullData = loadData();
+  fullData.push({ emotion, intensity, notes, time: timeStr, minutes });
+  saveData(fullData);
 
-  drawTimeline(data, true);
+  drawTimeline(fullData, true);
 }
 
+// ---------------- FILTER ----------------
+function filterTimeline() {
+  const start = document.getElementById("startTime").value;
+  const end = document.getElementById("endTime").value;
+
+  if (!start || !end) {
+    alert("Select both start and end time.");
+    return;
+  }
+
+  const startMin = timeToMinutes(start);
+  const endMin = timeToMinutes(end);
+
+  const filtered = fullData.filter(e =>
+    e.minutes >= startMin && e.minutes <= endMin
+  );
+
+  drawTimeline(filtered, false);
+}
+
+// ---------------- SHOW FULL ----------------
+function showFullTimeline() {
+  drawTimeline(fullData, false);
+}
+
+// ---------------- CLEAR ----------------
 function clearTimeline() {
   if (!confirm("Delete all emotion history?")) return;
 
   localStorage.removeItem(STORAGE_KEY);
+  fullData = [];
   points = [];
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   dayInfo.textContent = "Timeline cleared. Start logging emotions again.";
-
-  if (animationFrame) {
-    cancelAnimationFrame(animationFrame);
-    animationFrame = null;
-  }
 }
 
+// ---------------- DRAW ----------------
 function drawTimeline(data, animate) {
   canvas.width = canvas.offsetWidth;
   canvas.height = 320;
@@ -69,7 +103,6 @@ function drawTimeline(data, animate) {
 
   const spacing = canvas.width / (data.length + 1);
   const maxHeight = canvas.height - 50;
-
   let prev = null;
 
   data.forEach((entry, i) => {
@@ -92,6 +125,7 @@ function drawTimeline(data, animate) {
   drawAxis(data);
 }
 
+// ---------------- INTERACTION ----------------
 canvas.addEventListener("click", e => {
   const rect = canvas.getBoundingClientRect();
   const mx = e.clientX - rect.left;
@@ -111,6 +145,7 @@ canvas.addEventListener("click", e => {
   }
 });
 
+// ---------------- VISUALS ----------------
 function drawGlowPoint(x, y, color) {
   ctx.beginPath();
   ctx.shadowBlur = 15;
@@ -145,12 +180,13 @@ function animateGlowLine(x1, y1, x2, y2, color) {
     drawGlowLine(x1, y1, x, y, color);
 
     if (step < steps) {
-      animationFrame = requestAnimationFrame(frame);
+      requestAnimationFrame(frame);
     }
   }
   frame();
 }
 
+// ---------------- AXIS ----------------
 function drawAxis(data) {
   ctx.fillStyle = "#aaa";
   ctx.font = "12px Arial";
@@ -164,6 +200,7 @@ function drawAxis(data) {
   ctx.fillText("Time →", canvas.width - 60, canvas.height - 8);
 }
 
+// ---------------- COLORS ----------------
 function getColor(emotion) {
   return {
     happy: "#4caf50",
@@ -174,6 +211,8 @@ function getColor(emotion) {
   }[emotion] || "#fff";
 }
 
+// ---------------- LOAD ----------------
 window.onload = () => {
-  drawTimeline(loadData(), false);
+  fullData = loadData();
+  drawTimeline(fullData, false);
 };
