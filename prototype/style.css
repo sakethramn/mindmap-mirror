@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(145deg, #050505, #1a1a1a);
+  background: radial-gradient(circle at top, #0a0a0a, #000);
   color: #eee;
 }
 
@@ -19,77 +19,96 @@ main {
 }
 
 .card {
-  background: rgba(25,25,25,0.95);
-  border-radius: 16px;
+  background: rgba(20,20,20,0.95);
+  border-radius: 20px;
   padding: 20px;
-  width: 300px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+  width: 320px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .card.wide {
-  width: 550px;
+  width: 650px;
+}
+
+h1, h2 {
+  margin-top: 0;
 }
 
 label {
   display: block;
-  margin-top: 10px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #ccc;
 }
 
-select, textarea, input[type="range"], input[type="date"] {
+select, textarea, input[type="range"] {
   width: 100%;
-  margin-top: 5px;
+  margin-top: 6px;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
+  background: #111;
+  color: #eee;
+}
+
+textarea {
+  min-height: 60px;
 }
 
 button {
-  margin-top: 12px;
-  padding: 10px;
+  margin-top: 14px;
+  padding: 12px;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 14px;
   border: none;
   font-weight: bold;
   cursor: pointer;
+  background: linear-gradient(135deg, #ddd, #888);
+  color: #000;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 button:hover {
   transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(255,255,255,0.2);
 }
 
 .secondary {
-  background: #666;
+  background: #555;
   color: white;
 }
 
 .danger {
-  background: #f44336;
+  background: linear-gradient(135deg, #ff4b4b, #c62828);
   color: white;
 }
 
 canvas {
   width: 100%;
-  height: 300px;
-  background: #111;
-  border-radius: 10px;
+  height: 320px;
+  background: radial-gradient(circle at center, #050505, #000);
+  border-radius: 14px;
   cursor: pointer;
-}
-
-.timeline-controls {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  box-shadow: inset 0 0 30px rgba(255,255,255,0.05);
 }
 
 .range-value {
   text-align: center;
+  margin-top: 4px;
+  color: #aaa;
 }
 
 .day-info {
-  margin-top: 10px;
-  padding: 10px;
+  margin-top: 12px;
+  padding: 12px;
   background: #000;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
+  color: #ddd;
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+}
+
+.timeline-controls {
+  margin-top: 10px;
 }
