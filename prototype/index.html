@@ -2,24 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Emotion Tracker Prototype</title>
+  <title>Emotion Tracker Prototype | Live Timeline</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <header>
-  <h1>🧪 Emotion Tracker Prototype</h1>
+  <h1>🧪 Live Emotion Prototype</h1>
   <p>
-    Timeline Explanation:  
-    X-Axis → Days | Y-Axis → Emotional Intensity | Line Color → Emotion Type  
-    Click a point to see what you felt on that day.
+    Real-Time Timeline  
+    X-Axis → Minutes | Y-Axis → Intensity | Glow → Latest Emotion  
+    Click a glowing dot to view details.
   </p>
 </header>
 
 <main>
 
+  <!-- INPUT PANEL -->
   <section class="card">
-    <h2>Log Emotion</h2>
+    <h2>Log Live Emotion</h2>
 
     <label>Emotion</label>
     <select id="emotion">
@@ -36,37 +37,31 @@
     <div class="range-value" id="intensityValue">5</div>
 
     <label>Notes</label>
-    <textarea id="notes" placeholder="What made you feel this way today?"></textarea>
+    <textarea id="notes" placeholder="What changed your mood?"></textarea>
 
     <button onclick="saveEmotion()">Save Emotion</button>
     <button class="secondary" onclick="clearSelection()">Clear Selection</button>
   </section>
 
+  <!-- TIMELINE PANEL -->
   <section class="card wide">
-    <h2>Emotion Timeline</h2>
+    <h2>Live Emotion Timeline</h2>
 
     <canvas id="timeline"></canvas>
 
-    <div class="timeline-controls">
-      <label>From</label>
-      <input type="date" id="startDate">
-
-      <label>To</label>
-      <input type="date" id="endDate">
-
-      <button onclick="filterTimeline()">View Period</button>
-      <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
+    <div class="day-info" id="dayInfo">
+      Click the glowing dot to see emotion details.
     </div>
 
-    <div class="day-info" id="dayInfo">
-      Click a point on the timeline to see details for that day.
+    <div class="timeline-controls">
+      <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
     </div>
   </section>
 
 </main>
 
 <footer>
-  <p>Prototype • Interactive Emotional Timeline System</p>
+  <p>Prototype • Real-Time Emotional Flow Visualization</p>
 </footer>
 
 <script src="script.js"></script>
