@@ -1,125 +1,109 @@
+const STORAGE_KEY = "mindmap_emotions";
+
 const canvas = document.getElementById("timeline");
 const ctx = canvas.getContext("2d");
 
-const intensitySlider = document.getElementById("intensity");
+const intensityInput = document.getElementById("intensity");
 const intensityValue = document.getElementById("intensityValue");
 
-intensityValue.innerText = intensitySlider.value;
-intensitySlider.oninput = () => {
-  intensityValue.innerText = intensitySlider.value;
-};
-
-function resizeCanvas() {
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
-}
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
-
-/* Storage */
-function getData() {
-  return JSON.parse(localStorage.getItem("emotionData")) || [];
-}
-
-/* Save Emotion */
-function saveEmotion() {
-  const emotion = document.getElementById("emotion").value;
-  const intensity = Number(intensitySlider.value);
-  const notes = document.getElementById("notes").value;
-
-  const entry = {
-    emotion,
-    intensity,
-    notes,
-    time: new Date().toLocaleTimeString()
-  };
-
-  const data = getData();
-  data.push(entry);
-  localStorage.setItem("emotionData", JSON.stringify(data));
-
-  document.getElementById("notes").value = "";
-  drawTimeline();
-  updateHistory();
-}
-
-/* Draw Timeline with Explanation */
-function drawTimeline() {
-  const data = getData();
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  /* Axis labels */
-  ctx.fillStyle = "#888";
-  ctx.font = "12px Inter";
-  ctx.fillText("Time →", canvas.width - 60, canvas.height - 10);
-  ctx.fillText("Intensity ↑", 10, 20);
-
-  const spacing = canvas.width / (data.length + 1);
-
-  data.forEach((entry, index) => {
-    const x = spacing * (index + 1);
-    const y = canvas.height - entry.intensity * 20;
-
-    /* Draw point */
-    ctx.beginPath();
-    ctx.arc(x, y, 8 + entry.intensity / 2, 0, Math.PI * 2);
-    ctx.fillStyle = getEmotionColor(entry.emotion);
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = ctx.fillStyle;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    /* Connect lines */
-    if (index > 0) {
-      const prev = data[index - 1];
-      const prevX = spacing * index;
-      const prevY = canvas.height - prev.intensity * 20;
-
-      ctx.beginPath();
-      ctx.moveTo(prevX, prevY);
-      ctx.lineTo(x, y);
-      ctx.strokeStyle = "#444";
-      ctx.stroke();
-    }
-
-    /* Emotion label */
-    ctx.fillStyle = "#aaa";
-    ctx.font = "10px Inter";
-    ctx.fillText(entry.emotion, x - 15, canvas.height - 5);
+if (intensityInput && intensityValue) {
+  intensityInput.addEventListener("input", () => {
+    intensityValue.textContent = intensityInput.value;
   });
 }
 
-/* Colors */
-function getEmotionColor(emotion) {
-  switch (emotion) {
-    case "happy": return "#4caf50";
-    case "calm": return "#4cafef";
-    case "stressed": return "#ff9800";
-    case "sad": return "#9c27b0";
-    case "angry": return "#f44336";
-    default: return "#ccc";
+function loadData() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function saveEmotion() {
+  const emotion = document.getElementById("emotion").value;
+  const intensity = Number(document.getElementById("intensity").value);
+  const notes = document.getElementById("notes").value;
+
+  const today = new Date().toISOString().split("T")[0];
+  let data = loadData();
+
+  const index = data.findIndex(e => e.date === today);
+
+  const entry = { emotion, intensity, notes, date: today };
+
+  if (index !== -1) {
+    data[index] = entry;
+    alert("Today's emotion updated!");
+  } else {
+    data.push(entry);
+    alert("Emotion saved!");
+  }
+
+  saveData(data);
+  drawTimeline(data);
+}
+
+function clearTimeline() {
+  if (confirm("Delete all emotion history?")) {
+    localStorage.removeItem(STORAGE_KEY);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 }
 
-/* History */
-function updateHistory() {
-  const history = document.getElementById("history");
-  const data = getData();
-  history.innerHTML = "";
+function filterTimeline() {
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
 
-  data.slice(-10).reverse().forEach(entry => {
-    const div = document.createElement("div");
-    div.style.marginBottom = "10px";
-    div.innerHTML = `
-      <strong>${entry.emotion.toUpperCase()}</strong>
-      <span style="color:#aaa"> (${entry.time})</span><br>
-      Intensity: ${entry.intensity}<br>
-      <small>${entry.notes}</small>
-    `;
-    history.appendChild(div);
+  if (!start || !end) {
+    alert("Select both start and end dates");
+    return;
+  }
+
+  const data = loadData().filter(e => e.date >= start && e.date <= end);
+  drawTimeline(data);
+}
+
+function drawTimeline(data) {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 300;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (data.length === 0) return;
+
+  const spacing = canvas.width / (data.length + 1);
+  const maxHeight = canvas.height - 40;
+
+  ctx.beginPath();
+  ctx.moveTo(0, canvas.height / 2);
+
+  data.forEach((entry, i) => {
+    const x = spacing * (i + 1);
+    const y = canvas.height - (entry.intensity / 10) * maxHeight;
+
+    ctx.strokeStyle = getColor(entry.emotion);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = getColor(entry.emotion);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
   });
 }
 
-/* Initial Render */
-drawTimeline();
-updateHistory();
+function getColor(emotion) {
+  return {
+    happy: "#4caf50",
+    calm: "#03a9f4",
+    stressed: "#ff9800",
+    sad: "#9c27b0",
+    angry: "#f44336"
+  }[emotion] || "#fff";
+}
+
+window.onload = () => {
+  drawTimeline(loadData());
+};
