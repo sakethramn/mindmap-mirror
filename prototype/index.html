@@ -10,13 +10,15 @@
 <header>
   <h1>🧪 Live Emotion Prototype</h1>
   <p>
-    X-Axis → Time (Minutes) | Y-Axis → Intensity | Glow → Latest Emotion  
-    Click a dot to see emotion details instantly.
+    Timeline Guide:  
+    X-Axis → Time (Minutes) | Y-Axis → Intensity  
+    Soft glow indicates emotion points. Click any dot to view details.
   </p>
 </header>
 
 <main>
 
+<!-- INPUT PANEL -->
 <section class="card">
   <h2>Log Live Emotion</h2>
 
@@ -41,21 +43,23 @@
   <button class="secondary" onclick="clearSelection()">Clear Selection</button>
 </section>
 
+<!-- TIMELINE PANEL -->
 <section class="card wide">
   <h2>Live Emotion Timeline</h2>
 
   <canvas id="timeline"></canvas>
 
   <div class="timeline-controls">
-    <label>From</label>
+    <label>From Time</label>
     <input type="time" id="startTime">
 
-    <label>To</label>
+    <label>To Time</label>
     <input type="time" id="endTime">
 
     <button onclick="filterTimeline()">View Period</button>
     <button onclick="showFullTimeline()">Show Full Timeline</button>
-    <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
+    <button onclick="clearSelectedPeriod()">Clear Selected Period</button>
+    <button class="danger" onclick="clearTimeline()">Clear Full Timeline</button>
   </div>
 
   <div class="day-info" id="dayInfo">
@@ -66,7 +70,7 @@
 </main>
 
 <footer>
-  <p>Prototype • Real-Time Emotional Flow</p>
+  <p>Prototype • Real-Time Emotional Flow Visualization</p>
 </footer>
 
 <script src="script.js"></script>
