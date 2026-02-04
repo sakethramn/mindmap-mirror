@@ -27,7 +27,7 @@ main {
 }
 
 .card.wide {
-  width: 500px;
+  width: 550px;
 }
 
 label {
@@ -43,18 +43,8 @@ select, textarea, input[type="range"], input[type="date"] {
   border: none;
 }
 
-select {
-  background: #1a1a2e;
-  color: white;
-}
-
-select option {
-  background: #1a1a2e;
-  color: white;
-}
-
 button {
-  margin-top: 15px;
+  margin-top: 12px;
   padding: 10px;
   width: 100%;
   border-radius: 10px;
@@ -67,6 +57,11 @@ button:hover {
   transform: scale(1.05);
 }
 
+.secondary {
+  background: #666;
+  color: white;
+}
+
 .danger {
   background: #f44336;
   color: white;
@@ -77,6 +72,7 @@ canvas {
   height: 300px;
   background: #111;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 .timeline-controls {
@@ -88,4 +84,12 @@ canvas {
 
 .range-value {
   text-align: center;
+}
+
+.day-info {
+  margin-top: 10px;
+  padding: 10px;
+  background: #000;
+  border-radius: 8px;
+  font-size: 14px;
 }
