@@ -47,6 +47,14 @@
   <canvas id="timeline"></canvas>
 
   <div class="timeline-controls">
+    <label>From</label>
+    <input type="time" id="startTime">
+
+    <label>To</label>
+    <input type="time" id="endTime">
+
+    <button onclick="filterTimeline()">View Period</button>
+    <button onclick="showFullTimeline()">Show Full Timeline</button>
     <button class="danger" onclick="clearTimeline()">Clear Timeline</button>
   </div>
 
