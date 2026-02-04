@@ -1,85 +1,64 @@
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: Arial, sans-serif;
   background: linear-gradient(145deg, #050505, #1a1a1a);
   color: #eee;
 }
 
-/* Header */
-header {
+header, footer {
   text-align: center;
   padding: 20px;
-  background: #000;
 }
 
-/* Layout */
 main {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
-  padding: 30px;
+  padding: 20px;
 }
 
-/* Cards */
 .card {
-  background: rgba(20, 20, 20, 0.9);
+  background: rgba(25,25,25,0.95);
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+  width: 300px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.7);
 }
 
-.wide {
-  grid-column: span 1;
+.card.wide {
+  width: 500px;
 }
 
-/* Text */
-h2 {
-  margin-top: 0;
-}
-
-.subtitle {
-  font-size: 12px;
-  color: #aaa;
-  margin-bottom: 10px;
-}
-
-/* Inputs */
 label {
   display: block;
-  margin-top: 15px;
-  font-size: 13px;
+  margin-top: 10px;
 }
 
-select, textarea, input[type="range"] {
+select, textarea, input[type="range"], input[type="date"] {
   width: 100%;
-  margin-top: 8px;
-  background: #111;
-  color: white;
-  border: none;
-  border-radius: 10px;
+  margin-top: 5px;
   padding: 8px;
+  border-radius: 8px;
+  border: none;
 }
 
-textarea {
-  resize: none;
-  height: 70px;
+select {
+  background: #1a1a2e;
+  color: white;
 }
 
-.range-value {
-  text-align: right;
-  font-size: 12px;
-  color: #aaa;
+select option {
+  background: #1a1a2e;
+  color: white;
 }
 
-/* Button */
 button {
   margin-top: 15px;
+  padding: 10px;
   width: 100%;
-  padding: 12px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #ddd, #888);
-  color: black;
   font-weight: bold;
   cursor: pointer;
 }
@@ -88,51 +67,25 @@ button:hover {
   transform: scale(1.05);
 }
 
-/* Timeline */
+.danger {
+  background: #f44336;
+  color: white;
+}
+
 canvas {
   width: 100%;
-  height: 250px;
-  background: #000;
-  border-radius: 12px;
+  height: 300px;
+  background: #111;
+  border-radius: 10px;
 }
 
-/* Legend */
-.legend {
+.timeline-controls {
+  margin-top: 10px;
   display: flex;
   gap: 10px;
-  font-size: 12px;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
-.legend span {
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: #111;
-}
-
-.legend .happy { color: #4caf50; }
-.legend .calm { color: #4cafef; }
-.legend .stressed { color: #ff9800; }
-.legend .sad { color: #9c27b0; }
-.legend .angry { color: #f44336; }
-
-/* History */
-#history {
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-/* Footer */
-footer {
+.range-value {
   text-align: center;
-  padding: 15px;
-  font-size: 12px;
-  color: #777;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  main {
-    grid-template-columns: 1fr;
-  }
 }
